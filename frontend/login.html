@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <!-- <link rel="stylesheet" href="stylesheet.css"> -->
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script> 
+        <title>ChatOne</title>
+    </head>
+
+    <body>
+
+        <h1>Login</h1>
+        <div>
+            <p>Geben Sie hier den Namen an, mit dem Sie sich anmelden möchten.</p>
+            <form action="/login" method="post">
+                <label for="username">Benutzername:</label>
+                <input type="text" name="username" id="username" required>
+                <button type="submit">Einloggen</button>
+            </form>
+        </div>
+        
+
+        <script src="./client.js" type="text/javascript"></script>
+    </body>
+</html>
