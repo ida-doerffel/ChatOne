@@ -16,7 +16,7 @@ redisClient.connect();
 // Express-Session-Modul einrichten
 const session = require('express-session');
 const sessionMiddleware = session({
-  secret: 'geheimnisvolle geheimnisse',
+  secret: 'bitte lassen sie uns bestehen',
   resave: false,
   saveUninitialized: true
 });
@@ -36,13 +36,16 @@ app.get('/login', function(req, res) {
 });
 
 // Benutzer einloggen
-app.post('/login', function(req, res) {
+app.post('/login', async (req, res) =>{
   // Benutzernamen aus POST-Daten abrufen
   const username = req.body.username;
-  module.exports = username;
 
   // Benutzernamen in der Sitzung speichern
   req.session.username = username;
+  module.exports = req.session.username;
+  await redisClient.get('username')
+  app.set('person', req.session.username)
+  console.log(req.session.id, 'logged in as', req.session.username)
 
   // Benutzer zur Chat-Seite weiterleiten
   res.redirect('/');
@@ -62,7 +65,7 @@ app.get('/', function(req, res) {
 });
 
 // Socket.IO-Verbindung herstellen
-io.on('connection', function(socket) {
+io.on('connection', (socket) => {
   console.log('Benutzer verbunden');
 
   // Benutzernamen aus der Sitzung abrufen
@@ -76,12 +79,14 @@ io.on('connection', function(socket) {
   }
 
   // Benutzer ist eingeloggt, Chat-Nachrichten empfangen
-  socket.on('chat message', function(msg) {
+  socket.on('new-message-sent', async (msg) => {
+    await redisClient.set('elements', JSON.stringify(msg));
     console.log(username + ': ' + msg);
+    socket.emit('new-messages-received', msg)
   });
 
   // Socket.IO-Verbindung trennen
-  socket.on('disconnect', function() {
+  socket.on('disconnect', () => {
     console.log('Benutzer getrennt');
   });
 });
